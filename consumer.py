@@ -28,7 +28,7 @@ except:
     print('connection error')
 
 #getting data and predicting result using the model
-def stock_price_prediction(load_model):
+def stock_price_prediction():
         for msg in consumer:
             res = json.loads(msg.value.decode('utf-8'))
             datalist = list(res.values())
@@ -46,8 +46,9 @@ def stock_price_prediction(load_model):
             date_time = msg.key.decode('utf-8')
             return predicted_value, closed_value, date_time
 
-stock_price_prediction(load_trained_model)
-try:
-    consumer.close()
-except:
-    print("Close Consumer Manually")
+for mg in consumer:
+    stock_price_prediction()
+# try:
+#     consumer.close()
+# except:
+#     print("Close Consumer Manually")
