@@ -70,9 +70,6 @@
         .row{
             justify-content: center;
         }
-
-
-
 </style>
 
 <div class="container-fluid">
@@ -113,13 +110,11 @@
                 data1.push(result[0]);
                 data1.push(result[1]);
 
-
-<!--                Add the Point-->
-<!--                Time Actual Data-->
-                    var data2 = [];
-                    data2.push(result[0]);
-                    data2.push(result[2]);
-
+                 // Add the Point
+                 // Time Actual Data
+                 var data2 = [];
+                 data2.push(result[0]);
+                 data2.push(result[2]);
 
                 chartPredictedData.series[0].addPoint(data1, true, shiftPredictedData);
                 chartPredictedData.series[1].addPoint(data2, true, shiftPredictedData);
@@ -142,7 +137,7 @@
                 chart:
                     {
                     renderTo: 'data-PredictedData',
-                    defaultSeriesType: 'column',
+                    defaultSeriesType: 'area',
                     zoomType: 'xy',
                     events: {
                         load: requestData
@@ -178,7 +173,7 @@
                             approximation: 'sum',
                             },
                 series: [{
-                    color : 'orange',
+                    color : 'green',
                     lineColor: '#303030',
                     name: 'Predicted Price',
                     data: [] },
@@ -198,6 +193,7 @@ $('#button').click(function () {
                             Date.UTC(2020, 6, 7)
                        );
                 });
+
 </script>
 </body>
 </html>
