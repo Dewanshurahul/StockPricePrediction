@@ -7,7 +7,7 @@ import time
 app = Flask(__name__)
 
 @app.route('/')
-def home_page():
+def index():
     return render_template('index.html')
 
 @app.route('/data')
@@ -21,4 +21,4 @@ def data():
     return response
 
 if __name__ == "__main__":
-    app.run(dubug=True, host="127.0.0.1", port=5000, passthrough_errors=True)
+    app.run(host="127.0.0.1", port=5000, passthrough_errors=True)
