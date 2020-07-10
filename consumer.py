@@ -1,54 +1,62 @@
-import os
-os.environ["PYSPARK_PYTHON"]='/usr/bin/python3'
-from kafka import KafkaConsumer
-import pandas as pd
 import json
+import pandas as pd
+import time
+import datetime
+from datetime import datetime
+import json
+from json import loads
 
-#Importing pyspark modules
+'''import pyspark library'''
+
 from pyspark import SparkContext
 from pyspark.sql import SQLContext
-from pyspark.ml.feature import VectorAssembler
+from pyspark.sql.functions import hour,minute,second,col,avg,when
+import pyspark.sql.functions as sql_functions
+
+'''import kafka library for consumer'''
+from kafka import KafkaConsumer
+
+'''import kafka library for producer'''
+from kafka import KafkaProducer
+
+'''import pyspark mlib library'''
 from pyspark.ml.regression import LinearRegressionModel
+from pyspark.ml.feature import VectorAssembler
 
-#Declearing spark context
-sc= SparkContext()
+sc = SparkContext()
 sqlContext = SQLContext(sc)
-
-#Declearing the model path
 try:
-    Path = "stockModel"
-    load_trained_model = LinearRegressionModel.load(Path)
+    Model_Path =  "stockModel"
+    load_model = LinearRegressionModel.load(Model_Path)
 except:
-    print("Plese check path of trained model")
+    print("Model not Found")
 
-#Declearing consumer connection
-try:
-    consumer = KafkaConsumer('stock_price',bootstrap_servers=['localhost:9092'])
-except:
-    print('connection error')
-
-#getting data and predicting result using the model
+consumer  = KafkaConsumer('stock_price')
 def stock_price_prediction():
+    try:
+
         for msg in consumer:
-            res = json.loads(msg.value.decode('utf-8'))
-            datalist = list(res.values())
-            df = pd.DataFrame([datalist], columns=['Open', 'Close', 'Volume', 'High', 'Low'])
-            df = df.astype(float)
-            spark_df = sqlContext.createDataFrame(df)
-            vectorAssembler = VectorAssembler(inputCols=['Open', 'High', 'Low'], outputCol='Independent Columns')
-            df_vect = vectorAssembler.transform(spark_df)
-            df_vect_features = df_vect.select(['Independent Columns', 'Close'])
-            predictions = load_trained_model.transform(df_vect_features)
-            predictions.select("prediction", "Close", "Independent Columns").show()
+            res_dict = json.loads(msg.value.decode('utf-8'))
+            data_list = list(res_dict.values())
+            dataframe = pd.DataFrame([data_list], columns=['Open','Close','Volume','High','Low'])
+            spark_dataframe = sqlContext.createDataFrame(dataframe)
+            spark_Dataframe = spark_dataframe.selectExpr("cast(High as double) Volume",
+                                   "cast(Open as double) Open",
+                                   "cast(Low as double) Low",
+                                    "cast(High as double) High",
+                                    "cast(Close as double) Close",)
+            vectorAssembler=VectorAssembler(inputCols=["Open","High","Low"],outputCol="Independent Columns")
+
+            spark_Dataframe_vect = vectorAssembler.transform(spark_Dataframe)
+            spark_Dataframe_vect_features = spark_Dataframe_vect.select(['Independent Columns','Close'])
+            predictions = load_model.transform(spark_Dataframe_vect_features)
+            predictions.select("prediction","Close","Independent Columns").show()
             predicted_value = predictions.select('prediction').collect()[0].__getitem__("prediction")
-            closed_value = predictions.select('Close').collect()[0].__getitem__('Close')
+            close_value = predictions.select('Close').collect()[0].__getitem__('Close')
             print(msg.key)
             date_time = msg.key.decode('utf-8')
-            return predicted_value, closed_value, date_time
+            return predicted_value , close_value , date_time
+    except:
+        print("Invalid column exception")
+stock_price_prediction()
 
-for mg in consumer:
-    stock_price_prediction()
-# try:
-#     consumer.close()
-# except:
-#     print("Close Consumer Manually")
