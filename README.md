@@ -84,7 +84,7 @@ And we will Clean our DataSet And Train our Model
 	        location / {
 		              proxy_pass http://127.0.0.1:8000;
 	        }
-}
+	}
     ```
     - Save the above file and restart the nginx service.
     ```sh
