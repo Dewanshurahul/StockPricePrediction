@@ -51,7 +51,7 @@ And we will Clean our DataSet And Train our Model
   First run producer.py file and then run app.py file and enter the URL given by app.py on Web Browser to Visualise the Graph.
   
   # Deployment : 
-  Create an instance on AWS EC2 [FOLLOW VIDEO](https://www.youtube.com/watch?v=-Gc8CMjQZfc&list=PL5KTLzN85O4KTCYzsWZPTP0BfRj6I_yUP)
+  - Create an instance on AWS EC2 [FOLLOW VIDEO](https://www.youtube.com/watch?v=-Gc8CMjQZfc&list=PL5KTLzN85O4KTCYzsWZPTP0BfRj6I_yUP)
     - ssh into your instance using downloaded .pem file while creating instance
     ```sh
     $ ssh -i fileName.pem ubuntu@<IP ADDERSS>(provided by AWS instance)
